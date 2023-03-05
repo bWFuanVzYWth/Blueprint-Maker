@@ -56,7 +56,7 @@ uint32_t pcg32_random_r(pcg32_random_t* rng) {
 #define CHEMICAL2_X (6.6)
 #define CHEMICAL2_Y (7.2)
 
-#define CHROMOSOMES_LENGTH 64
+#define CHROMOSOMES_LENGTH 72
 
 typedef enum {
     none = 0,
@@ -166,12 +166,13 @@ double get_score(module_t gene[CHROMOSOMES_LENGTH], double* need) {
     }
     // 找出瓶颈的建筑是哪个
     double weight[ENUM_END] = { 0.0 };
-    module_t bottleneck = 1;
-    for(size_t i = 1; i < ENUM_END; i++)
-        weight[i] = (double)module_count[i] / (double)need[i];
-    for(size_t i = 2; i < ENUM_END; i++) {
-        if(weight[i] < weight[bottleneck])
-            bottleneck = i;
+    module_t bottleneck = 0;
+    for(size_t i = 1; i < ENUM_END; i++) {
+        if(need[i] > 0.0) {
+            weight[i] = (double)module_count[i] / (double)need[i];
+            if((bottleneck == none) || (weight[i] < weight[bottleneck]))
+                bottleneck = i;
+        }
     }
 
     // 计算分数
@@ -228,7 +229,7 @@ void output(module_t gene[CHROMOSOMES_LENGTH], double need[ENUM_END]) {
         fprintf(stderr, "total %lld: %lld\t, score = %lf\n", i, module_count[i], (double)module_count[i] / need[i]);
 
     // 输出蓝图
-    FILE* fp = stdout;
+    FILE* fp = fopen("test.json", "wb");
     fprintf(fp, HEAD);
 
     size_t index = 0;
@@ -261,6 +262,7 @@ void output(module_t gene[CHROMOSOMES_LENGTH], double need[ENUM_END]) {
     }
 
     fprintf(fp, TAIL);
+    fclose(fp);
 }
 
 // 遗传算法的种群生成
@@ -296,10 +298,10 @@ int cmp(const void* ptr_a, const void* ptr_b) {
 int main(int argc, char* argv[]) {
     const time_t time_start = time(NULL);
 
-    double need[ENUM_END] = { 0, 43, 300, 57 }; // 第一个数必须填0
+    double need[ENUM_END] = { 0, 1, 0, 0 }; // 第一个数必须填0
 
     // 种群生成
-    size_t individual_count = 65536;
+    size_t individual_count = 262144;
     individual_t* individual = calloc(individual_count, sizeof(individual_t));
     for(size_t i = 0; i < individual_count; i++)
         init_individual(&(individual[i]), need, (uint64_t)((size_t)time_start + i + 1));
