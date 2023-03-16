@@ -27,6 +27,12 @@ uint32_t pcg32_random_r(pcg32_random_t* rng) {
     return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
 }
 
+uint64_t get_timestamp(void) {
+    struct timespec t;
+    clock_gettime(0, &t);
+    return (uint64_t)t.tv_sec * 1000000000 + (uint64_t)t.tv_nsec;
+}
+
 // TODO 外置
 #define HEAD "{\"header\":{\"layout\":10,\"icons\":[0,0,0,0,0],\"time\":\"2023-02-29T24:00:01.000Z\",\"gameVersion\":\"0.9.27.15466\",\"shortDesc\":\"New Blueprint\",\"desc\":\"\"},\"version\":1,\"cursorOffset\":{\"x\":0,\"y\":0},\"cursorTargetArea\":0,\"dragBoxSize\":{\"x\":1,\"y\":1},\"primaryAreaIdx\":0,\"areas\":[{\"index\":0,\"parentIndex\":-1,\"tropicAnchor\":0,\"areaSegments\":200,\"anchorLocalOffset\":{\"x\":0,\"y\":0},\"size\":{\"x\":1,\"y\":1}}],\"buildings\":["
 #define TAIL "]}"
@@ -34,35 +40,58 @@ uint32_t pcg32_random_r(pcg32_random_t* rng) {
 #define ASSEMBLER "{\"index\":%d,\"areaIndex\":0,\"localOffset\":[{\"x\":%lf,\"y\":%lf,\"z\":0},{\"x\":%lf,\"y\":%lf,\"z\":0}],\"yaw\":[0,0],\"itemId\":2305,\"modelIndex\":67,\"outputObjIdx\":-1,\"inputObjIdx\":-1,\"outputToSlot\":0,\"inputFromSlot\":0,\"outputFromSlot\":0,\"inputToSlot\":0,\"outputOffset\":0,\"inputOffset\":0,\"recipeId\":0,\"filterId\":0,\"parameters\":{\"acceleratorMode\":0}}"
 #define SMELTER "{\"index\":%d,\"areaIndex\":0,\"localOffset\":[{\"x\":%lf,\"y\":%lf,\"z\":0},{\"x\":%lf,\"y\":%lf,\"z\":0}],\"yaw\":[0,0],\"itemId\":2315,\"modelIndex\":194,\"outputObjIdx\":-1,\"inputObjIdx\":-1,\"outputToSlot\":0,\"inputFromSlot\":0,\"outputFromSlot\":0,\"inputToSlot\":0,\"outputOffset\":0,\"inputOffset\":0,\"recipeId\":0,\"filterId\":0,\"parameters\":{\"acceleratorMode\":0}}"
 #define CHEMICAL "{\"index\":%d,\"areaIndex\":0,\"localOffset\":[{\"x\":%lf,\"y\":%lf,\"z\":0},{\"x\":%lf,\"y\":%lf,\"z\":0}],\"yaw\":[0,0],\"itemId\":2317,\"modelIndex\":376,\"outputObjIdx\":-1,\"inputObjIdx\":-1,\"outputToSlot\":0,\"inputFromSlot\":0,\"outputFromSlot\":0,\"inputToSlot\":0,\"outputOffset\":0,\"inputOffset\":0,\"recipeId\":0,\"filterId\":0,\"parameters\":{\"acceleratorMode\":0}}"
+#define COLLIDER "{\"index\":%d,\"areaIndex\":0,\"localOffset\":[{\"x\":%lf,\"y\":%lf,\"z\":0},{\"x\":%lf,\"y\":%lf,\"z\":0}],\"yaw\":[90,90],\"itemId\":2310,\"modelIndex\":69,\"outputObjIdx\":-1,\"inputObjIdx\":-1,\"outputToSlot\":0,\"inputFromSlot\":0,\"outputFromSlot\":0,\"inputToSlot\":0,\"outputOffset\":0,\"inputOffset\":0,\"recipeId\":0,\"filterId\":0,\"parameters\":{\"acceleratorMode\":0}}"
+#define LAB "{\"index\":%d,\"areaIndex\":0,\"localOffset\":[{\"x\":%lf,\"y\":%lf,\"z\":0},{\"x\":%lf,\"y\":%lf,\"z\":0}],\"yaw\":[0,0],\"itemId\":2901,\"modelIndex\":70,\"outputObjIdx\":-1,\"inputObjIdx\":-1,\"outputToSlot\":14,\"inputFromSlot\":15,\"outputFromSlot\":15,\"inputToSlot\":14,\"outputOffset\":0,\"inputOffset\":0,\"recipeId\":0,\"filterId\":0,\"parameters\":{\"researchMode\":0,\"acceleratorMode\":0}}"
+#define REFINE "{\"index\":%d,\"areaIndex\":0,\"localOffset\":[{\"x\":%lf,\"y\":%lf,\"z\":0},{\"x\":%lf,\"y\":%lf,\"z\":0}],\"yaw\":[0,0],\"itemId\":2308,\"modelIndex\":63,\"outputObjIdx\":-1,\"inputObjIdx\":-1,\"outputToSlot\":0,\"inputFromSlot\":0,\"outputFromSlot\":0,\"inputToSlot\":0,\"outputOffset\":0,\"inputOffset\":0,\"recipeId\":0,\"filterId\":0,\"parameters\":{\"acceleratorMode\":0}}"
 
 // TODO 可自定义
 
-#define Y_MAX 180.0
-#define Y_MIN 0.0
+#define Y_MAX (250 - 83)
+#define Y_MIN 0
 
 // TODO 可自定义
 #define SMELTER_X (2.31118)
 #define SMELTER_Y (2.31118)
-#define SMELTER2_X (2.31118)
-#define SMELTER2_Y (5.31118)
+#define SMELTER2_X (2.31118 + 0.0001)
+#define SMELTER2_Y (5.31118 + 0.0001)
 
 #define ASSEMBLER_X (3.0416)
 #define ASSEMBLER_Y (3.0416)
-#define ASSEMBLER2_X (3.0416)
-#define ASSEMBLER2_Y (6.7416)
+#define ASSEMBLER2_X (3.0416 + 0.0001)
+#define ASSEMBLER2_Y (6.7416 + 0.0001)
 
-#define CHEMICAL_X (6.6)
-#define CHEMICAL_Y (3.6)
-#define CHEMICAL2_X (6.6)
-#define CHEMICAL2_Y (7.2)
+#define CHEMICAL_X (6.597206)
+#define CHEMICAL_Y (3.49776)
+#define CHEMICAL2_X (6.597206 + 0.0001)
+#define CHEMICAL2_Y (7.54389 + 0.0001)
 
-#define CHROMOSOMES_LENGTH 72
+#define LAB_X (4.4495)
+#define LAB_Y (4.4495)
+#define LAB2_X (4.4495 + 0.0001)
+#define LAB2_Y (9.6495 + 0.0001)
+
+#define COLLIDER_X (4.6756)
+#define COLLIDER_Y (9.1604)
+#define COLLIDER2_X (4.6756 + 0.0001)
+#define COLLIDER2_Y (18.7163 + 0.0001)
+
+#define REFINE_X (2.79486)
+#define REFINE_Y (6.2555)
+#define REFINE2_X (2.79486 + 0.0001)
+#define REFINE2_Y (12.511 + 0.0001)
+
+#define CHROMOSOMES_LENGTH 24
+
+#define DIVIDE 4.0 // 把赤道分成几份
 
 typedef enum {
     none = 0,
     smelter2,
     assembler2,
     chemical2,
+    lab2,
+    collider2,
+    refine2,
     ENUM_END
 }module_t;
 
@@ -71,6 +100,9 @@ const double building_size_y[ENUM_END + 1] = {
     SMELTER_Y,
     ASSEMBLER_Y,
     CHEMICAL_Y,
+    LAB_Y,
+    COLLIDER_Y,
+    REFINE_Y,
     NAN
 };
 
@@ -79,6 +111,9 @@ const double building_size_x[ENUM_END + 1] = {
     SMELTER_X,
     ASSEMBLER_X,
     CHEMICAL_X,
+    LAB_X,
+    COLLIDER_X,
+    REFINE_X,
     NAN
 };
 
@@ -87,6 +122,9 @@ const double module_size_y[ENUM_END + 1] = {
     SMELTER2_Y,
     ASSEMBLER2_Y,
     CHEMICAL2_Y,
+    LAB2_Y,
+    COLLIDER2_Y,
+    REFINE2_Y,
     NAN
 };
 
@@ -95,6 +133,9 @@ const double module_size_x[ENUM_END + 1] = {
     SMELTER2_X,
     ASSEMBLER2_X,
     CHEMICAL2_X,
+    LAB2_X,
+    COLLIDER2_X,
+    REFINE2_X,
     NAN
 };
 
@@ -124,7 +165,7 @@ double get_blueprint_x_max(double bp_y, double size_x, double size_y) {
     if(fabs(bp_y) >= 250.0 - module_diagonal)
         return 0.0;
     double r = get_r(bp_y);
-    return (2 * M_PI * r) / 10.0; // 1/20球
+    return (2 * M_PI * r) / DIVIDE;
 }
 
 // 输入建筑低纬度的顶角处对应的蓝图坐标y和建筑尺寸的xy，返回此处建筑最大的y跨度
@@ -200,10 +241,31 @@ void output_assembler2(FILE* fp, size_t* ptr_index, double x, double y) {
 }
 
 void output_chemical2(FILE* fp, size_t* ptr_index, double x, double y) {
-    double y_0 = y + module_size_y[chemical2] * 0.5 - building_size_y[chemical2] * 0.5 - 0.5;
-    double y_1 = y - module_size_y[chemical2] * 0.5 + building_size_y[chemical2] * 0.5 - 0.5;
+    double y_0 = y + module_size_y[chemical2] * 0.5 - building_size_y[chemical2] * 0.5 - 0.462; // magic number - 0.462 +- 0.003
+    double y_1 = y - module_size_y[chemical2] * 0.5 + building_size_y[chemical2] * 0.5 - 0.462;
     output_building(fp, CHEMICAL, ptr_index, x, y_0);
     output_building(fp, CHEMICAL, ptr_index, x, y_1);
+}
+
+void output_lab2(FILE* fp, size_t* ptr_index, double x, double y) {
+    double y_0 = y + module_size_y[lab2] * 0.5 - building_size_y[lab2] * 0.5;
+    double y_1 = y - module_size_y[lab2] * 0.5 + building_size_y[lab2] * 0.5;
+    output_building(fp, LAB, ptr_index, x, y_0);
+    output_building(fp, LAB, ptr_index, x, y_1);
+}
+
+void output_collider2(FILE* fp, size_t* ptr_index, double x, double y) {
+    double y_0 = y + module_size_y[collider2] * 0.5 - building_size_y[collider2] * 0.5;
+    double y_1 = y - module_size_y[collider2] * 0.5 + building_size_y[collider2] * 0.5;
+    output_building(fp, COLLIDER, ptr_index, x, y_0);
+    output_building(fp, COLLIDER, ptr_index, x, y_1);
+}
+
+void output_refine2(FILE* fp, size_t* ptr_index, double x, double y) {
+    double y_0 = y + module_size_y[refine2] * 0.5 - building_size_y[refine2] * 0.5;
+    double y_1 = y - module_size_y[refine2] * 0.5 + building_size_y[refine2] * 0.5;
+    output_building(fp, REFINE, ptr_index, x, y_0);
+    output_building(fp, REFINE, ptr_index, x, y_1);
 }
 
 void output(module_t gene[CHROMOSOMES_LENGTH], double need[ENUM_END]) {
@@ -239,7 +301,7 @@ void output(module_t gene[CHROMOSOMES_LENGTH], double need[ENUM_END]) {
             double y_last = i > 0 ? bp_y[i - 1] : 0.0;
             double y_base = (bp_y[i] + y_last) * 0.5;
             for(size_t j = 0; j < module_count_gene[i]; j++) {
-                double x_n = ((double)j + 0.5) / (double)module_count_gene[i] * 100.0; // 1/20球
+                double x_n = ((double)j + 0.5) / (double)module_count_gene[i] * (1000.0 / DIVIDE);
 
                 switch(gene[i]) {
                 case smelter2:
@@ -252,6 +314,18 @@ void output(module_t gene[CHROMOSOMES_LENGTH], double need[ENUM_END]) {
 
                 case chemical2:
                 output_chemical2(fp, &index, x_n, y_base);
+                break;
+
+                case lab2:
+                output_lab2(fp, &index, x_n, y_base);
+                break;
+
+                case collider2:
+                output_collider2(fp, &index, x_n, y_base);
+                break;
+
+                case refine2:
+                output_refine2(fp, &index, x_n, y_base);
                 break;
 
                 default:
@@ -295,14 +369,26 @@ int cmp(const void* ptr_a, const void* ptr_b) {
     return 0;
 }
 
-int main(int argc, char* argv[]) {
-    const time_t time_start = time(NULL);
+// typedef enum {
+//     none = 0,
+//     smelter2,
+//     assembler2,
+//     chemical2,
+//     lab2,
+//     collider2,
+//     refine2,
+//     ENUM_END
+// }module_t;
 
-    double need[ENUM_END] = { 0, 1, 0, 0 }; // 第一个数必须填0
+int main(int argc, char* argv[]) {
+    const time_t time_start = get_timestamp();
+
+    double need[ENUM_END] = { 0, 1346, 2349, 174, 360/* 5325/15+5 */, 214, 154 }; // 第一个数必须填0
 
     // 种群生成
-    size_t individual_count = 262144;
+    size_t individual_count = 1048576;
     individual_t* individual = calloc(individual_count, sizeof(individual_t));
+#pragma omp parallel for
     for(size_t i = 0; i < individual_count; i++)
         init_individual(&(individual[i]), need, (uint64_t)((size_t)time_start + i + 1));
 
@@ -312,17 +398,15 @@ int main(int argc, char* argv[]) {
     // 迭代进化
     const double p_crossover = 0.5;
     const double p_mutation = 0.02;
-    pcg32_random_t pcg = { (uint64_t)time_start, 0 };
-    pcg32_random_r(&pcg);
 
     size_t kill_count = (size_t)((double)individual_count * p_crossover);
-    for(size_t iteration = 0; iteration < 256; iteration++) {
+    for(size_t iteration = 0; iteration < 1024; iteration++) {
         // 交叉
     #pragma omp parallel for
         for(size_t i = 0; i < kill_count; i++) {
-            size_t mom = kill_count + pcg32_random_r(&pcg) % (individual_count - kill_count);
-            size_t dad = kill_count + pcg32_random_r(&pcg) % (individual_count - kill_count);
-            size_t crossover_point = pcg32_random_r(&pcg) % (CHROMOSOMES_LENGTH - 1) + 1;
+            size_t mom = kill_count + pcg32_random_r(&individual[i].pcg) % (individual_count - kill_count);
+            size_t dad = kill_count + pcg32_random_r(&individual[i].pcg) % (individual_count - kill_count);
+            size_t crossover_point = pcg32_random_r(&individual[i].pcg) % (CHROMOSOMES_LENGTH - 1) + 1;
             for(size_t j = 0; j < crossover_point; j++)
                 individual[i].gene[j] = individual[mom].gene[j];
             for(size_t j = crossover_point; j < CHROMOSOMES_LENGTH; j++)
@@ -331,10 +415,10 @@ int main(int argc, char* argv[]) {
         }
         // 变异
     #pragma omp parallel for
-        for(size_t i = 0; i < individual_count; i++) {
-            if(((double)pcg32_random_r(&pcg) / (double)UINT32_MAX) < p_mutation) {
-                size_t mutation_point = pcg32_random_r(&pcg) % CHROMOSOMES_LENGTH;
-                individual[i].gene[mutation_point] = pcg32_random_r(&pcg) % ENUM_END;
+        for(size_t i = 1; i < individual_count; i++) {  // 从1而不是从0开始是为了保留最好结果
+            if(((double)pcg32_random_r(&individual[i].pcg) / (double)UINT32_MAX) < p_mutation) {
+                size_t mutation_point = pcg32_random_r(&individual[i].pcg) % CHROMOSOMES_LENGTH;
+                individual[i].gene[mutation_point] = pcg32_random_r(&individual[i].pcg) % ENUM_END;
                 individual[i].score = get_score(individual[i].gene, need);
             }
         }
